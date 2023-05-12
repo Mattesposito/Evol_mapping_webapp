@@ -12,12 +12,14 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
     pars.set_cosmology(H0=param['h0']*100.,
                     ombh2=param['ombh2'],
                     omch2=param['omch2'],
+                    omk=param['Omk'],
                     num_massive_neutrinos=1,
                     mnu=93.14 * param['omnuh2'],
                     standard_neutrino_neff=2.0328)
     pars.InitPower.set_params(ns=param['ns'],
                                 As=param['As']) 
-
+    if param['w'] != -1. or param['wa'] != 0.:
+        pars.set_dark_energy(w=param['w'], wa=param['wa'])
     pars.set_matter_power(redshifts=redshifts)
     #Linear spectra  
     pars.NonLinear = model.NonLinear_none
@@ -55,36 +57,57 @@ phys_param = True if param_space == 'Good parameters' else False
 
 if phys_param:
     omnuh2_list = [0, 0.0001, 0.0006, 0.001, 0.01, 0.1]
-    ombh2 = st.sidebar.slider(
-        r'Select a value for $\omega_b$',
-        0.8*0.02235, 1.2*0.02235, 0.02235, step=0.001, format='%.5f'
-    )
+    with st.sidebar:
+        with st.expander("Shape parameters", expanded=True):
+            ombh2 = st.slider(
+                r'Select a value for $\omega_b$',
+                0.8*0.02235, 1.2*0.02235, 0.02235, step=0.001, format='%.5f'
+            )
 
-    omch2 = st.sidebar.slider(
-        r'Select a value for $\omega_{\mathrm{{CDM}}}$',
-        0.8*0.191692, 1.2*0.191692, 0.191692, step=0.005, format='%.5f'
-    )
+            omch2 = st.slider(
+                r'Select a value for $\omega_{\mathrm{{CDM}}}$',
+                0.8*0.191692, 1.2*0.191692, 0.191692, step=0.005, format='%.5f'
+            )
 
-    omnuh2 = st.sidebar.select_slider(
-        label=r'Select a value for $\omega_\nu$',
-        options=omnuh2_list, value=0.0006
-    )
+            ns = st.slider(
+                r'Select a value for $n_s$',
+                0.8, 1.2, 0.96, step=0.01, format='%.2f'
+            )
+        with st.expander("Evolution parameters", expanded=True):
+            As = st.slider(
+                r'Select a value for $A_s [10^{-9}]$',
+                0.8*1.70, 1.2*1.70, 1.70, step=0.01, format='%.2f'
+            )
+            As *= 1e-9
 
-    As = st.sidebar.slider(
-        r'Select a value for $A_s [10^{-9}]$',
-        0.8*1.70, 1.2*1.70, 1.70, step=0.01, format='%.2f'
-    )
-    As *= 1e-9
+            wa = st.slider(
+                r'Select a value for $w_a$',
+                -0.20, 0.20, 0., step=0.01, format='%.2f'
+            )
+            min_w = max(-1., -1.-wa) + 1e-5 if wa != 0. else -1.5
 
-    ns = st.sidebar.slider(
-        r'Select a value for $n_s$',
-        0.8, 1.2, 0.96, step=0.01, format='%.2f'
-    )
+            w = st.slider(
+                r'Select a value for $w$',
+                min_w, -0.5, max(-1., min_w), step=0.01, format='%.2f'
+            )
 
-    h0 = st.sidebar.slider(
-        r'Select a value for $h$',
-        0.5, 1.0, 0.67, step=0.01, format='%.2f'
-    )
+            omkh2 = st.slider(
+                r'Select a value for $\omega_K$',
+                -0.05*0.67, 0.05*0.67, 0., step=0.01, format='%.2f'
+            )
+
+            h0 = st.slider(
+                r'Select a value for $h$',
+                0.5, 1.0, 0.67, step=0.01, format='%.2f'
+            )
+            
+            Omk = omkh2/h0**2
+
+        with st.expander("Mixed parameters", expanded=False):
+            omnuh2 = st.select_slider(
+                label=r'Select a value for $\omega_\nu$',
+                options=omnuh2_list, value=0.0006
+            )
 else:
     Omnu_list = [0, 0.0001/0.67**2, 0.0006/0.67**2, 0.001/0.67**2, 0.01/0.67**2, 0.1/0.67**2]
     
@@ -119,6 +142,22 @@ else:
         0.5, 1.0, 0.67, step=0.01, format='%.2f'
     )
 
+    wa = st.sidebar.slider(
+        r'Select a value for $w_a$',
+        -0.20, 0.20, 0., step=0.01, format='%.2f'
+    )
+    min_w = max(-1., -1.-wa) + 1e-5 if wa != 0. else -1.5
+
+    w = st.sidebar.slider(
+        r'Select a value for $w$',
+        min_w, -0.5, max(-1., min_w), step=0.01, format='%.2f'
+    )
+
+    Omk = st.sidebar.slider(
+        r'Select a value for $\Omega_K$',
+        -0.05, 0.05, 0., step=0.01, format='%.2f'
+    )
+
     ombh2 = Omb*h0**2
     omch2 = Omc*h0**2
     omnuh2 = Omnu*h0**2
@@ -129,11 +168,14 @@ _lock = RendererAgg.lock
 
 with _lock:
     param = {'h0': h0, 'ombh2': ombh2, 'omch2': omch2, 
-                 'omnuh2': omnuh2, 'As': As, 'ns': ns}
+                 'omnuh2': omnuh2, 'As': As, 'ns': ns,
+                 'w': w, 'wa': wa, 'Omk': Omk}
     k, Pk = get_Pk_camb(param, Mpc_units=Mpc_units)
 
-    param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 'omch2': 0.191692, 
-                    'omnuh2': 0.00048, 'As': 1.70e-09, 'ns': 0.96}
+    param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 
+                 'omch2': 0.191692, 'omnuh2': 0.00048, 
+                 'As': 1.70e-09, 'ns': 0.96,
+                 'w': -1., 'wa': 0., 'Omk': 0}
     k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units)
 
     fig, ax = plt.subplots()
