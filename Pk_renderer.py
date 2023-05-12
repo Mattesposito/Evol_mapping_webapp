@@ -153,3 +153,8 @@ with _lock:
         ax.set_xlim(6e-4, 1.5)
         ax.set_ylim(1e2, 2.5e4)
     st.pyplot(fig)
+
+
+st.write('\n')
+st.write('\n')
+st.markdown('Powered with **camb**, by Antony Lewis and Anthony Challinor (https://github.com/cmbant/CAMB)')
