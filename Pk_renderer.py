@@ -61,12 +61,12 @@ if phys_param:
         with st.expander("Shape parameters", expanded=True):
             ombh2 = st.slider(
                 r'Select a value for $\omega_b$',
-                0.8*0.02235, 1.2*0.02235, 0.02235, step=0.001, format='%.5f'
+                0.6*0.02235, 1.4*0.02235, 0.02235, step=0.001, format='%.5f'
             )
 
             omch2 = st.slider(
                 r'Select a value for $\omega_{\mathrm{{CDM}}}$',
-                0.8*0.191692, 1.2*0.191692, 0.191692, step=0.005, format='%.5f'
+                0.8*(0.191692-(ombh2-0.02235)), 1.2*(0.191692-(ombh2-0.02235)), (0.191692-(ombh2-0.02235)), step=0.005, format='%.5f'
             )
 
             ns = st.slider(
@@ -118,7 +118,7 @@ else:
 
     Omc = st.sidebar.slider(
         r'Select a value for $\Omega_{\mathrm{{CDM}}}$',
-        0.8*0.191692/0.67**2, 1.2*0.191692/0.67**2, 0.191692/0.67**2, step=0.005, format='%.5f'
+        0.8*(0.191692-(Omb*0.67**2-0.02235))/0.67**2, 1.2*(0.191692-(Omb*0.67**2-0.02235))/0.67**2, (0.191692-(Omb*0.67**2-0.02235))/0.67**2, step=0.005, format='%.5f'
     )
 
     Omnu = st.sidebar.select_slider(
