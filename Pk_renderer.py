@@ -162,7 +162,8 @@ else:
     omch2 = Omc*h0**2
     omnuh2 = Omnu*h0**2
 
-
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.backends.backend_agg import RendererAgg
 _lock = RendererAgg.lock
 
