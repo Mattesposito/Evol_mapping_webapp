@@ -178,6 +178,8 @@ with _lock:
                  'w': -1., 'wa': 0., 'Omk': 0}
     k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units)
 
+    print(param)
+
     # fig, ax = plt.subplots()
     # plt.tick_params(reset = True, which='both', bottom=True, top=True, right=True, left=True, 
     #                 direction = 'in',
@@ -204,12 +206,12 @@ with _lock:
     ax0.loglog(k_def, Pk_def, ls='--', c='coral')
     ax0.loglog(k, Pk)
     if Mpc_units:
-        ax0.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
+        # ax0.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
         ax0.set_xlim(6e-4, 1.5)
         ax0.set_ylim(1e2, 8e4)
     else:
-        ax0.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
+        # ax0.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
         ax0.set_xlim(6e-4, 1.5)
         ax0.set_ylim(1e2, 2.5e4)
@@ -220,6 +222,11 @@ with _lock:
     # Plot on the second (residuals) axes
     ax1.plot(k, residuals, ls='-', c='darkviolet')
     ax1.set_ylabel('Residuals (%)')
+    # Adjust layout
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0)  # Adjust space between the plots
+    plt.setp(ax0.get_xticklabels(), visible=False)  # Hide ax0's x-tick labels
+
     st.pyplot(fig)
 
 
