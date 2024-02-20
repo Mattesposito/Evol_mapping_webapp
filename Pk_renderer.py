@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import camb
 from camb import model
 import numpy as np
@@ -177,22 +178,48 @@ with _lock:
                  'w': -1., 'wa': 0., 'Omk': 0}
     k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units)
 
-    fig, ax = plt.subplots()
-    plt.tick_params(reset = True, which='both', bottom=True, top=True, right=True, left=True, 
-                    direction = 'in',
-                    labelleft=True, labeltop=False, labelright=False, labelbottom=True)
-    ax.loglog(k_def, Pk_def, ls = '--', c='coral')
-    ax.loglog(k, Pk)
+    # fig, ax = plt.subplots()
+    # plt.tick_params(reset = True, which='both', bottom=True, top=True, right=True, left=True, 
+    #                 direction = 'in',
+    #                 labelleft=True, labeltop=False, labelright=False, labelbottom=True)
+    # ax.loglog(k_def, Pk_def, ls = '--', c='coral')
+    # ax.loglog(k, Pk)
+    # if Mpc_units:
+    #     ax.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
+    #     ax.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
+    #     ax.set_xlim(6e-4, 1.5)
+    #     ax.set_ylim(1e2, 8e4)
+    # else:
+    #     ax.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
+    #     ax.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
+    #     ax.set_xlim(6e-4, 1.5)
+    #     ax.set_ylim(1e2, 2.5e4)
+
+    fig = plt.figure(figsize=(8, 6))
+    gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1]) 
+    ax0 = plt.subplot(gs[0])
+    ax1 = plt.subplot(gs[1], sharex=ax0)
+
+    # Plot on the first (main) axes
+    ax0.loglog(k_def, Pk_def, ls='--', c='coral')
+    ax0.loglog(k, Pk)
     if Mpc_units:
-        ax.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
-        ax.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
-        ax.set_xlim(6e-4, 1.5)
-        ax.set_ylim(1e2, 8e4)
+        ax0.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
+        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
+        ax0.set_xlim(6e-4, 1.5)
+        ax0.set_ylim(1e2, 8e4)
     else:
-        ax.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
-        ax.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
-        ax.set_xlim(6e-4, 1.5)
-        ax.set_ylim(1e2, 2.5e4)
+        ax0.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
+        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
+        ax0.set_xlim(6e-4, 1.5)
+        ax0.set_ylim(1e2, 2.5e4)
+
+    # Calculate residuals (example, adjust according to your data)
+    residuals = (Pk/Pk_def-1)*100
+
+    # Plot on the second (residuals) axes
+    ax1.plot(k, residuals, ls='-', c='darkviolet')
+    ax1.set_ylabel('Residuals (%)')
     st.pyplot(fig)
 
 
