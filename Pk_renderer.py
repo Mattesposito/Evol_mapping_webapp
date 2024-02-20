@@ -26,7 +26,7 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
     pars.NonLinear = model.NonLinear_none
     pars.DoLensing = False
     results = camb.get_results(pars)
-    kmin = 1e-3 if kmin is None else kmin
+    kmin = 1e-4 if kmin is None else kmin
     kmax = 1 if kmax is None else kmax
     if Mpc_units:
         kmin /= param['h0']
@@ -206,14 +206,14 @@ with _lock:
     ax0.loglog(k_def, Pk_def, ls='--', c='coral')
     ax0.loglog(k, Pk)
     if Mpc_units:
-        # ax0.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
+        ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
-        ax0.set_xlim(6e-4, 1.5)
+        ax0.set_xlim(1e-4, 1)
         ax0.set_ylim(1e2, 8e4)
     else:
-        # ax0.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
+        ax1.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
-        ax0.set_xlim(6e-4, 1.5)
+        ax0.set_xlim(1e-4, 1)
         ax0.set_ylim(1e2, 2.5e4)
 
     # Calculate residuals (example, adjust according to your data)
