@@ -240,7 +240,7 @@ with open(plot_name, "rb") as img:
         label="Download plot",
         data=img,
         file_name=plot_name,
-        mime="image/png"
+        mime="image/pdf"
     )
 st.write('\n')
 st.write('\n')
