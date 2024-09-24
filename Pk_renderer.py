@@ -227,9 +227,21 @@ with _lock:
     plt.subplots_adjust(hspace=0)  # Adjust space between the plots
     plt.setp(ax0.get_xticklabels(), visible=False)  # Hide ax0's x-tick labels
 
+    # Saving figure in case the user wants to download it
+    plot_name = 'Pk_plot.pdf'
+    plt.savefig(plot_name)
+
     st.pyplot(fig)
 
-
+st.write('\n')
+st.write('\n')
+with open(plot_name, "rb") as img:
+    btn = st.download_button(
+        label="Download plot",
+        data=img,
+        file_name=plot_name,
+        mime="image/png"
+    )
 st.write('\n')
 st.write('\n')
 st.markdown('Powered with **camb**, by Antony Lewis and Anthony Challinor (https://github.com/cmbant/CAMB)')
