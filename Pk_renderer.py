@@ -218,6 +218,7 @@ with _lock:
 
     # Calculate residuals (example, adjust according to your data)
     residuals = (Pk/Pk_def-1)*100
+    residuals[residuals<1e-10] = 0
 
     # Plot on the second (residuals) axes
     ax1.plot(k, residuals, ls='-', c='darkviolet')
