@@ -197,7 +197,7 @@ with _lock:
     #     ax.set_xlim(6e-4, 1.5)
     #     ax.set_ylim(1e2, 2.5e4)
 
-    fig = plt.figure(figsize=(10, 5))
+    fig = plt.figure(figsize=(8, 10))
     gs = gridspec.GridSpec(2, 1, height_ratios=[4, 1]) 
     ax0 = plt.subplot(gs[0])
     ax1 = plt.subplot(gs[1], sharex=ax0)
