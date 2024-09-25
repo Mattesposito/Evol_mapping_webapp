@@ -173,7 +173,7 @@ with _lock:
     k, Pk = get_Pk_camb(param, Mpc_units=Mpc_units)
 
     param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 
-                 'omch2': 0.191692, 'omnuh2': 0.00048, 
+                 'omch2': 0.191692, 'omnuh2': 0.0006, 
                  'As': 1.70e-09, 'ns': 0.96,
                  'w': -1., 'wa': 0., 'Omk': 0}
     k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units)
