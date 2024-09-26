@@ -64,11 +64,13 @@ def get_Pk_var(var, c):
                  'As': 1.70e-09, 'ns': 0.96,
                  'w': -1., 'wa': 0., 'Omk': 0}
     
-    if var == 'Omk':
+    if var in ['Omk', 'wa']:
         eps = c
     else:
         eps = param_def[var]*c#cosmo_dict[base_cosmo][var]*c
     param = {**param_def, var: param_def[var]+eps}
+    if var == 'wa':
+        param['w'] = -0.6
     if var == 'ombh2':
         param['omch2'] = param['omch2']-eps
     return get_Pk_camb(param)
@@ -116,7 +118,7 @@ def save_animation(var_param, var_range, smooth):
     ani = animation.FuncAnimation(fig, run_anim, Pk_list[::2]+[Pk_list[0]], interval=50, init_func=init_anim)
     # components.html(ani.to_jshtml(), height=10)
     ani.save(f'var_{var_param}.gif', savefig_kwargs={"transparent": True})#, writer=animation.PillowWriter())#, 'facecolor': None})#, writer=animation.PillowWriter())
-    st.image(f'var_{var_param}.gif')
+    # st.image(f'var_{var_param}.gif')
     # return f'var_{var_param}.gif'
 
 
@@ -145,6 +147,11 @@ with st.sidebar:
             r'Choose the increase/decrease range in which to vary %s (in absolute value)' %param_label,
             0.05, 0.3, 0.1, step=0.05, format='%.2f'
         )
+    elif var_param == 'wa':
+        var_range = st.slider(
+            r'Choose the increase/decrease range in which to vary %s (in absolute value)' %param_label,
+            0.01, 0.4, 0.1, step=0.01, format='%.2f'
+        )
     else:
         var_range = st.slider(
             r'Choose the increase/decrease range in which to vary %s (in relative value)' %param_label,
@@ -161,18 +168,26 @@ with st.sidebar:
 from matplotlib.backends.backend_agg import RendererAgg
 _lock = RendererAgg.lock
 
-with st.spinner('Creating your GIF...'):
-    with _lock:
-        save_animation(var_param, var_range, nframes_per_loop)
-gif_fname = f'var_{var_param}.gif'
+if st.button('Generate GIF'):
+    with st.spinner('Creating your GIF...'):
+        with _lock:
+            save_animation(var_param, var_range, nframes_per_loop)
+            GIF_avail = True
+else:
+    GIF_avail = False
 
-with open(gif_fname, "rb") as img:
-    dwnl_btn = st.download_button(
-        label="Download GIF",
-        data=img,
-        file_name=gif_fname,
-        mime="image/gif"
-    )
+gif_fname = f'var_{var_param}.gif'
+GIF_avail = os.path.exists(gif_fname)
+
+if GIF_avail:
+    st.image(gif_fname)
+    with open(gif_fname, "rb") as img:
+        dwnl_btn = st.download_button(
+            label="Download GIF",
+            data=img,
+            file_name=gif_fname,
+            mime="image/gif"
+        )
 
     st.write('\n')
 st.write('\n')
