@@ -161,8 +161,9 @@ with st.sidebar:
 from matplotlib.backends.backend_agg import RendererAgg
 _lock = RendererAgg.lock
 
-with _lock:
-    save_animation(var_param, var_range, nframes_per_loop)
+with st.spinner('Creating your GIF...'):
+    with _lock:
+        save_animation(var_param, var_range, nframes_per_loop)
 gif_fname = f'var_{var_param}.gif'
 
 with open(gif_fname, "rb") as img:
