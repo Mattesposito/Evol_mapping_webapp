@@ -213,7 +213,7 @@ with _lock:
 
     # Plot on the first (main) axes
     ax0.loglog(k_def, Pk_def, ls='--', c='coral')
-    ax0.loglog(k, Pk)
+    ax0.loglog(k, Pk, c='darkviolet')
     if Mpc_units:
         ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
