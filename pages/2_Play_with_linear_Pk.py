@@ -5,6 +5,11 @@ import camb
 from camb import model
 import numpy as np
 
+st.set_page_config(
+    page_title="Play with linear Pk",
+    page_icon=":chart_with_upwards_trend:",
+)
+
 @st.cache_data(show_spinner=False)
 def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
     ### set up the redshifts and parameters
@@ -59,6 +64,10 @@ phys_param = True if param_space == 'Good parameters' else False
 if phys_param:
     omnuh2_list = [0, 0.0001, 0.0006, 0.001, 0.01, 0.1]
     with st.sidebar:
+        z = st.number_input(
+                r'Select a redshift $z$',
+                0.0, 0.2, 0.0, step=0.001, format='%.3f'
+            )
         with st.expander("Shape parameters", expanded=True):
             ombh2 = st.slider(
                 r'Select a value for $\omega_b$',
@@ -170,7 +179,7 @@ with _lock:
     param = {'h0': h0, 'ombh2': ombh2, 'omch2': omch2, 
                  'omnuh2': omnuh2, 'As': As, 'ns': ns,
                  'w': w, 'wa': wa, 'Omk': Omk}
-    k, Pk = get_Pk_camb(param, Mpc_units=Mpc_units)
+    k, Pk = get_Pk_camb(param, z=z, Mpc_units=Mpc_units)
 
     param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 
                  'omch2': 0.191692, 'omnuh2': 0.0006, 
@@ -197,7 +206,7 @@ with _lock:
     #     ax.set_xlim(6e-4, 1.5)
     #     ax.set_ylim(1e2, 2.5e4)
 
-    fig = plt.figure(figsize=(8, 10))
+    fig = plt.figure(figsize=(8, 8))
     gs = gridspec.GridSpec(2, 1, height_ratios=[4, 1]) 
     ax0 = plt.subplot(gs[0])
     ax1 = plt.subplot(gs[1], sharex=ax0)
@@ -218,7 +227,7 @@ with _lock:
 
     # Calculate residuals (example, adjust according to your data)
     residuals = (Pk/Pk_def-1)*100
-    residuals[residuals<1e-10] = 0
+    residuals[np.abs(residuals)<1e-10] = 0
 
     # Plot on the second (residuals) axes
     ax1.axhline(0, ls='--', c='coral')
