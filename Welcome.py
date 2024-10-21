@@ -13,5 +13,5 @@ st.markdown('It consists of two pages: :orange[Play with linear Pk] and :green[C
 st.markdown('The :orange[first page] allows you to play with the parameters of the linear matter power spectrum and visualize the results.')
 st.markdown('The :green[second page] allows you to create a (downloadable) GIF of the linear matter power spectrum varying one parameter at a time.')
 
-st.markdown('For any request, for reporting bugs or if you would like to take a look at the source code, you can contact me (Matteo Esposito) at: [esposito@mpe.mpg.de](mailto:esposito@mpe.mpg.de)')
+st.markdown('For any request or for reporting bugs you can contact me (Matteo Esposito) at: [esposito@mpe.mpg.de](mailto:esposito@mpe.mpg.de)')
 st.markdown('Enjoy! :smile:')
