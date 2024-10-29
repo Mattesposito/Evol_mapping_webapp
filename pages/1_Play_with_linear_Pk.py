@@ -45,8 +45,8 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
     return kh,pk_lin
 
 
-st.title('Fantastic parameters and where to find them')
-st.title('\n')
+# st.title('Fantastic parameters and where to find them')
+# st.title('\n')
 
 # Add a selectbox to the sidebar:
 param_space = st.sidebar.selectbox(
@@ -189,31 +189,14 @@ with _lock:
 
     print(param)
 
-    # fig, ax = plt.subplots()
-    # plt.tick_params(reset = True, which='both', bottom=True, top=True, right=True, left=True, 
-    #                 direction = 'in',
-    #                 labelleft=True, labeltop=False, labelright=False, labelbottom=True)
-    # ax.loglog(k_def, Pk_def, ls = '--', c='coral')
-    # ax.loglog(k, Pk)
-    # if Mpc_units:
-    #     ax.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
-    #     ax.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
-    #     ax.set_xlim(6e-4, 1.5)
-    #     ax.set_ylim(1e2, 8e4)
-    # else:
-    #     ax.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
-    #     ax.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
-    #     ax.set_xlim(6e-4, 1.5)
-    #     ax.set_ylim(1e2, 2.5e4)
-
     fig = plt.figure(figsize=(8, 8))
     gs = gridspec.GridSpec(2, 1, height_ratios=[4, 1]) 
     ax0 = plt.subplot(gs[0])
     ax1 = plt.subplot(gs[1], sharex=ax0)
 
     # Plot on the first (main) axes
-    ax0.loglog(k_def, Pk_def, ls='--', c='coral')
-    ax0.loglog(k, Pk, c='darkviolet')
+    ax0.loglog(k_def, Pk_def*k_def**(1/2), ls='--', c='k')
+    ax0.loglog(k, Pk, c='#FF4B4B')
     if Mpc_units:
         ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
         ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
@@ -230,8 +213,8 @@ with _lock:
     residuals[np.abs(residuals)<1e-10] = 0
 
     # Plot on the second (residuals) axes
-    ax1.axhline(0, ls='--', c='coral')
-    ax1.plot(k, residuals, ls='-', c='darkviolet')
+    ax1.axhline(0, ls='--', c='k')
+    ax1.plot(k, residuals, ls='-', c='#FF4B4B')
     ax1.set_ylabel('Residuals (%)')
     # Adjust layout
     plt.tight_layout()
