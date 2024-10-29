@@ -58,7 +58,7 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
         pk_lin /= param['h0']**3
     return kh,pk_lin
 
-def get_Pk_var(var, c):
+def get_Pk_var(var, c, var_range, bar):
     param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 
                  'omch2': 0.191692, 'omnuh2': 0.0006, 
                  'As': 1.70e-09, 'ns': 0.96,
@@ -73,16 +73,24 @@ def get_Pk_var(var, c):
         param['w'] = -0.6
     if var == 'ombh2':
         param['omch2'] = param['omch2']-eps
-    return get_Pk_camb(param)
+
+    Pk = get_Pk_camb(param)
+    if c < 0:
+        bar.progress(-(c/var_range)/2, 'Running CAMB (many times)...')
+    elif c > 0:
+        bar.progress((c/var_range)/2+0.5, 'Running CAMB (many times)...')
+    return Pk
 
 
 def save_animation(var_param, var_range, smooth):
     # We first delete the older gifs
     os.system('rm -f *.gif')
-    Pk_list = [get_Pk_var(var_param, c) for c in np.linspace(0, -var_range, smooth)]
+    camb_progress = st.progress(0, 'Running CAMB (many times)...')
+    Pk_list = [get_Pk_var(var_param, c, var_range, camb_progress) for c in np.linspace(0, -var_range, smooth)]
     Pk_list += Pk_list[::-1][:-1]
-    temp = [get_Pk_var(var_param, c) for c in np.linspace(0, var_range, smooth)]
+    temp = [get_Pk_var(var_param, c, var_range, camb_progress) for c in np.linspace(0, var_range, smooth)]
     Pk_list += temp + temp[::-1]
+    camb_progress.empty()
 
     def init_anim():
         # set_plot_params()
@@ -175,6 +183,8 @@ if st.button('Generate GIF'):
             GIF_avail = True
 else:
     GIF_avail = False
+    st.markdown('This is page is dedicated to the creation of a GIF that shows the variation of the linear power spectrum as a function of a chosen parameter. ')
+    st.markdown('You can choose in the sidebar the parameter you want to vary, the range of variation and the smoothness of the animation. ')
 
 gif_fname = f'var_{var_param}.gif'
 GIF_avail = os.path.exists(gif_fname)
