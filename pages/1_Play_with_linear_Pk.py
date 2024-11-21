@@ -48,6 +48,8 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
 # st.title('Fantastic parameters and where to find them')
 # st.title('\n')
 
+#
+
 # Add a selectbox to the sidebar:
 param_space = st.sidebar.selectbox(
     'Do you want good parameters or bad parameters?',
@@ -195,7 +197,7 @@ with _lock:
     ax1 = plt.subplot(gs[1], sharex=ax0)
 
     # Plot on the first (main) axes
-    ax0.loglog(k_def, Pk_def*k_def**(1/2), ls='--', c='k')
+    ax0.loglog(k_def, Pk_def, ls='--', c='k')
     ax0.loglog(k, Pk, c='#FF4B4B')
     if Mpc_units:
         ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
