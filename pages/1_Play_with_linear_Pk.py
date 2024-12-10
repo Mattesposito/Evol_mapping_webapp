@@ -198,13 +198,13 @@ with _lock:
     ax0.loglog(k_def, Pk_def, ls='--', c='k')
     ax0.loglog(k, Pk, c='#FF4B4B')
     if Mpc_units:
-        ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)')
-        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)')
+        ax1.set_xlabel(r'k/($\mathrm{Mpc}^{-1}$)', fontsize=14)
+        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}^{3}$)', fontsize=14)
         ax0.set_xlim(1e-4, 1)
         ax0.set_ylim(1e2, 8e4)
     else:
-        ax1.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)')
-        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$')
+        ax1.set_xlabel(r'k/(h$\mathrm{Mpc}^{-1}$)', fontsize=14)
+        ax0.set_ylabel(r'P(k)/($\mathrm{Mpc}/h)^{3}$', fontsize=14)
         ax0.set_xlim(1e-4, 1)
         ax0.set_ylim(1e2, 2.5e4)
 
@@ -215,7 +215,7 @@ with _lock:
     # Plot on the second (residuals) axes
     ax1.axhline(0, ls='--', c='k')
     ax1.plot(k, residuals, ls='-', c='#FF4B4B')
-    ax1.set_ylabel('Residuals (%)')
+    ax1.set_ylabel('Residuals (%)', fontsize=14)
     # Adjust layout
     plt.tight_layout()
     plt.subplots_adjust(hspace=0)  # Adjust space between the plots
