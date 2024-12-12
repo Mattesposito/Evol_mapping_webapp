@@ -9,7 +9,7 @@ import os
 
 st.set_page_config(
     page_title="Create linear Pk GIF",
-    page_icon=":floppy_disk:",
+    page_icon=":film_frames:",
 )
 
 # def set_plot_params(labels = True):
