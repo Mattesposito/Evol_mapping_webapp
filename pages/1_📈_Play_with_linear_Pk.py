@@ -122,6 +122,11 @@ if phys_param:
             )
 else:
     Omnu_list = [0, 0.0001/0.67**2, 0.0006/0.67**2, 0.001/0.67**2, 0.01/0.67**2, 0.1/0.67**2]
+
+    z = st.number_input(
+                r'Select a redshift $z$',
+                0.0, 0.2, 0.0, step=0.001, format='%.3f'
+            )
     
     Omb = st.sidebar.slider(
         r'Select a value for $\Omega_b$',
