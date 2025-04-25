@@ -1,0 +1,3 @@
+[submodule "comet-emu"]
+	path = comet-emu
+	url = https://gitlab.com/aegge/comet-emu.git
