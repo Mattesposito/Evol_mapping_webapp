@@ -11,44 +11,68 @@ st.set_page_config(
 )
 
 @st.cache_data(show_spinner=False)
-def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True):
-    ### set up the redshifts and parameters
-    pars = camb.CAMBparams()
-    redshifts=[z]
-    pars.set_cosmology(H0=param['h0']*100.,
-                    ombh2=param['ombh2'],
-                    omch2=param['omch2'],
-                    omk=param['Omk'],
-                    num_massive_neutrinos=1,
-                    mnu=93.14 * param['omnuh2'],
-                    standard_neutrino_neff=2.0328)
-    pars.InitPower.set_params(ns=param['ns'],
-                                As=param['As']) 
-    if param['w'] != -1. or param['wa'] != 0.:
-        pars.set_dark_energy(w=param['w'], wa=param['wa'])
-    pars.set_matter_power(redshifts=redshifts)
-    #Linear spectra  
-    pars.NonLinear = model.NonLinear_none
-    pars.DoLensing = False
-    results = camb.get_results(pars)
+def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True, code='CAMB'):
+
     kmin = 1e-4 if kmin is None else kmin
     kmax = 1 if kmax is None else kmax
     if Mpc_units:
         kmin /= param['h0']
         kmax /= param['h0']
 
-    kh, z, pk_lin = results.get_matter_power_spectrum(minkh=kmin, maxkh=kmax, npoints = npoints)
-    pk_lin = pk_lin[0]
+    if code == 'CAMB':
+        ### set up the redshifts and parameters
+        pars = camb.CAMBparams()
+        redshifts=[z]
+        pars.set_cosmology(H0=param['h0']*100.,
+                        ombh2=param['ombh2'],
+                        omch2=param['omch2'],
+                        omk=param['Omk'],
+                        num_massive_neutrinos=1,
+                        mnu=93.14 * param['omnuh2'],
+                        standard_neutrino_neff=2.0328)
+        pars.InitPower.set_params(ns=param['ns'],
+                                    As=param['As']) 
+        if param['w'] != -1. or param['wa'] != 0.:
+            pars.set_dark_energy(w=param['w'], wa=param['wa'])
+        pars.set_matter_power(redshifts=redshifts)
+        #Linear spectra  
+        pars.NonLinear = model.NonLinear_none
+        pars.DoLensing = False
+        results = camb.get_results(pars)
+
+        kh, z, pk_lin = results.get_matter_power_spectrum(minkh=kmin, maxkh=kmax, npoints = npoints)
+        pk_lin = pk_lin[0]
+    else:
+        params = {}
+        # We always need to specify the shape parameter values, e.g.
+        params['wc'] = param['omch2']
+        params['wb'] = param['ombh2']
+        params['ns'] = param['ns']
+        params['Mnu'] = param['omnuh2'] * 93.14
+        params['h']  = param['h0']
+        params['As'] = param['As']/1e-9
+        params['Ok'] = param['Omk']
+        params['z']  = z
+        params['w0'] = param['w']
+        params['wa'] = param['wa']
+        kh = np.logspace(np.log10(kmin), np.log10(kmax), 300)
+        pk_lin = EFT.PL(params=params, k=kh, de_model='w0wa')
+
     if Mpc_units:
         kh *= param['h0']
         pk_lin /= param['h0']**3
     return kh,pk_lin
 
+@st.cache_resource(show_spinner=False)
+def load_emu():
+    from comet import comet
+    return comet(model='EFT', use_Mpc=False)
+
 
 # st.title('Fantastic parameters and where to find them')
 # st.title('\n')
 
-#
+EFT = load_emu()
 
 # Add a selectbox to the sidebar:
 param_space = st.sidebar.selectbox(
@@ -58,6 +82,10 @@ param_space = st.sidebar.selectbox(
 units = st.sidebar.selectbox(
     'Do you want good units or bad units?',
     ('Good units (Mpc)', 'Bad units (Mpc/h)')
+)
+code_to_use = st.sidebar.selectbox(
+    'Do you want to use CAMB or the Comet emulator?',
+    ('CAMB', 'Comet')
 )
 
 Mpc_units = True if units == 'Good units (Mpc)' else False
@@ -186,13 +214,13 @@ with _lock:
     param = {'h0': h0, 'ombh2': ombh2, 'omch2': omch2, 
                  'omnuh2': omnuh2, 'As': As, 'ns': ns,
                  'w': w, 'wa': wa, 'Omk': Omk}
-    k, Pk = get_Pk_camb(param, z=z, Mpc_units=Mpc_units)
+    k, Pk = get_Pk_camb(param, z=z, Mpc_units=Mpc_units, code=code_to_use)
 
     param_def = {'h0': 0.67, 'Omega_m': 0.45570, 'ombh2': 0.02235, 
                  'omch2': 0.191692, 'omnuh2': 0.0006, 
                  'As': 1.70e-09, 'ns': 0.96,
                  'w': -1., 'wa': 0., 'Omk': 0}
-    k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units)
+    k_def, Pk_def = get_Pk_camb(param_def, Mpc_units=Mpc_units, code=code_to_use)
 
     print(param)
 
@@ -245,4 +273,7 @@ with open(plot_name, "rb") as img:
     )
 st.write('\n')
 st.write('\n')
-st.markdown('Powered with **camb**, by Antony Lewis and Anthony Challinor (https://github.com/cmbant/CAMB)')
+if code_to_use == 'CAMB':
+    st.markdown('Powered with **camb**, by Antony Lewis and Anthony Challinor (https://github.com/cmbant/CAMB)')
+else:
+    st.markdown('Powered with **Comet**, by Alex Eggemeier et al. (https://gitlab.com/aegge/comet-emu)')
