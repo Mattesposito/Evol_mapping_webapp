@@ -65,6 +65,8 @@ def get_Pk_camb(param,z=0,npoints=1000, kmin=None, kmax=None, Mpc_units=True, co
 
 @st.cache_resource(show_spinner=False)
 def load_emu():
+    import os
+    print('Curretnt working directory:', os.getcwd())
     from my_Py_libs import import_install_comet
     comet = import_install_comet()
     return comet(model='EFT', use_Mpc=False)

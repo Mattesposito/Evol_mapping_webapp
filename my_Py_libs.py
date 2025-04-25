@@ -25,7 +25,7 @@ def import_install_comet():
 
     # Step 2: Try importing comet
     try:
-        import comet
+        from comet import comet
     except ImportError:
         # Step 3: Try installing comet from the submodule path
         try:
@@ -41,7 +41,7 @@ def import_install_comet():
         # Step 4: Retry import
         try:
             importlib.invalidate_caches()
-            import comet
+            from comet import comet
         except ImportError:
             raise ImportError("Failed to import comet even after installation.")
         
