@@ -5,7 +5,7 @@ import importlib
 
 def import_install_comet():
     # Courtesy of chatGPT
-    repo_path = Path(__file__).parent / "../comet-emu"
+    repo_path = Path(__file__).parent / "comet-emu"
     setup_py = repo_path / "setup.py"
 
     # Step 1: If setup.py is missing, try initializing submodules
@@ -30,7 +30,7 @@ def import_install_comet():
         # Step 3: Try installing comet from the submodule path
         try:
             subprocess.run(
-                [sys.executable, "-m", "pip", "install", "--user", "-e", str(repo_path)],
+                [sys.executable, "-m", "pip", "install", "-e", str(repo_path)],
                 check=True
             )
             print("Installed comet in user mode.")
